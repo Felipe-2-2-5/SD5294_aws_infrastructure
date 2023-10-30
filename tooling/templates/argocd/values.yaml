@@ -1,0 +1,33 @@
+server:
+  config:
+    helm.valuesFileSchemes: >-
+      secrets+gpg-import, secrets+gpg-import-kubernetes,
+      secrets+age-import, secrets+age-import-kubernetes,
+      secrets,secrets+literal,
+      https
+  ingress:
+    enabled: true
+    hosts:
+      - ${argocd_url}
+    ingressClassName: nginx
+    pathType: Prefix
+
+  rbacConfig:
+    policy.default: "role:readonly"
+
+service:
+  webhook:
+    ingress:
+      enabled: false
+
+repoServer:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: ${iam_role}
+
+notification:
+  enabled: true
+  argocdUrl:
+  notifiers:
+    service.telegram: |
+      token: ${telegram_token}

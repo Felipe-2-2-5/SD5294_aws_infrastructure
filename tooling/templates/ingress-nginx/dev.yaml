@@ -1,0 +1,35 @@
+controller:
+  kind: "Deployment"
+  service:
+    external:
+      enabled: true
+    internal:
+      enabled: false
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: true
+    externalTrafficPolicy: "Local"
+  ingressClassResource:
+    default: true
+  autoscaling:
+    enabled: true
+    maxReplicas: 4
+    minReplicas: 2
+  resource:
+    requests:
+      cpu: "100"
+      memory: "200Mi"
+  # config:
+  #   - enable-real-ip: "true"
+  #   - use-forwarded-headers: "true"
+  tolerations:
+    - key: dedicated
+      value: ingress
+      operator: Equal
+      effect: NoSchedule
+  metrics:
+    enabled: true
+
+defaultBackend:
+  enabled: true

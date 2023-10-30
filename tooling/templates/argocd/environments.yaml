@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: environment-appset
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: ${environment}
+
+  template:
+    metadata:
+      name: "{{env}}-environment"
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/letrung910/sd5294_msa_gitops.git'
+        path: "manifest/{{env}}"
+        targetRevision: "main"
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: argocd
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - PruneLast=true

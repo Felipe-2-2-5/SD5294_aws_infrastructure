@@ -1,0 +1,24 @@
+ingress_instance_types:
+  [
+    "t3.medium"
+  ]
+ingress_min_size: 2
+ingress_desired_size: 2
+ingress_max_size: 3
+
+workload_instance_types:
+  [
+    "t3.medium",
+    "t3.large",
+    "m5.large"
+  ]
+workload_min_size: 2
+workload_desired_size: 3
+workload_max_size: 4
+
+
+karpenter_instance_types: '["c5.*", "m5.*", "r5.*"]'
+
+
+
+## nginx

@@ -1,0 +1,33 @@
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: ${ARGOCD_IMAGE_UPDATER_ROLE_ARN}
+  name: argocd-image-updater
+
+config:
+  argocd:
+    grpcWeb: false
+    serverAddress: "http://argocd-server.argocd"
+    insecure: true
+    plaintext: true
+
+  registries:
+  - name: ECR
+    api_url: https://657177457547.dkr.ecr.us-east-1.amazonaws.com
+    prefix: 657177457547.dkr.ecr.us-east-1.amazonaws.com   # before v0.12 this needed to be set empty, prefix: ""
+    default: true  # not supported before v0.12
+    ping: yes
+    insecure: no
+    credentials: ext:/scripts/ecr-login.sh  #script name should match here and in authScripts
+    credsexpire: 11h
+
+authScripts:
+  enabled: true
+  scripts:
+    ecr-login.sh: | 
+      #!/bin/sh
+      aws ecr --region $AWS_REGION get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
+
+extraEnv:
+  - name: AWS_REGION
+    value: "us-east-1"
